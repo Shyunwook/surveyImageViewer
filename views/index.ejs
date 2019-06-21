@@ -122,7 +122,7 @@
 
         $(document).ready(() => {
             let list = <%- fileList %>;
-            list.shift();
+            // list.shift();
             console.log(list);
             clist.setData(list);
         });
@@ -173,10 +173,11 @@
                         }else{
                             day = "평일"
                         }
-
+                        console.log(info[5]);
+                        console.log(info);
                         let cond_age = (age - age % 10).toString();
                         let param = {
-                            file: './images/' + list[idx],
+                            file: 'https://s3.ap-northeast-2.amazonaws.com/survey.image/image/' + encodeURI(list[idx]),
                             name: info[0],
                             age: (age - age % 10).toString(),
                             real_age: age,
