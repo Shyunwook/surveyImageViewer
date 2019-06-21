@@ -19,7 +19,10 @@ app.get('/', (_, res) => {
     //         res.render('index.ejs', { fileList : JSON.stringify(filelist) });
     //     }
     // })
+    AWS.config.accessKeyId = "AKIAIXBW7VDZ4WIBEWFA";
+    AWS.config.secretAccessKey = "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";
     AWS.config.region = 'ap-northeast-2';
+
     let s3 = new AWS.S3();
     s3.listObjects({ Bucket : 'survey.image' }).on('success', function handlePage(response) {
         let fileList = [];
