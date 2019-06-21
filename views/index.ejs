@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="moment.js"></script> 
+
+    <style>
+        .grid-item {
+            margin-bottom: 10px;
+        }
+
+        .grid{
+            margin-top: 20px;
+        }
+
+        #app{
+            margin-top: 20px;
+        }
+
+        .filter{
+            font-size: 10px;
+        }
+
+        .filter_box{
+            margin-left: 30px;
+            margin-right: 30px;
+            padding: 15px;
+            border: 1px solid #b3b3b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container-fluid">
+        <div class="row">
+            <div class="filter_box row">
+                <div id='time' class="col-md-2">
+                    <p>시간</p>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="조식" v-model="conditions.time" checked>조식
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="중식" v-model="conditions.time" checked>중식
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="석식" v-model="conditions.time" checked>석식
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.time }}</span> -->
+                </div>
+                <div id='exp' class="col-md-2">
+                    <p>주방구매경험</p>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="주방O" v-model="conditions.exp" checked>주방O
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="주방X" v-model="conditions.exp" checked>주방X
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.exp }}</span> -->
+                </div>
+                <div id='place' class="col-md-2">
+                    <p>식사 장소</p>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="외식" v-model="conditions.place" checked>외식
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="집밥" v-model="conditions.place" checked>집밥
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.place }}</span> -->
+                </div>
+                <div id='way' class="col-md-2">
+                    <p>식사 방식</p>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="조리" v-model="conditions.way" checked>조리
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="상차림" v-model="conditions.way" checked>상차림
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+                </div>
+                <div id='age' class="col-md-2">
+                    <p>나이대</p>
+                    <label v-for="age in age_list" class="checkbox-inline">
+                        <input type="checkbox" :value="age" v-model="conditions.age" checked>{{age}}대
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.age }}</span> -->
+                </div>
+                <div id='day' class="col-md-2">
+                    <p>평일/주말</p>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="평일" v-model="conditions.day" checked>평일
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" value="주말" v-model="conditions.day" checked>주말
+                    </label>
+                    <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item" v-for="list in img_list">
+                <img :src="list.file" width=400 :data-name="list.name" :data-exp="list.exp" :data-date="list.date"
+                    :data-time="list.time" :data-place="list.place" :data-way="list.way" :data-number="list.number"
+                    :data-age="list.real_age" v-if="dataFilter(list)" :data-day="list.day">
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $(document).ready(() => {
+            let list = <%- fileList %>;
+            list.shift();
+            console.log(list);
+            clist.setData(list);
+        });
+
+        let clist = new Vue({
+            el: '#app',
+            data: {
+                img_list: [],
+                flag: true,
+                age_list: [],
+                conditions: {
+                    // name: 'all',
+                    exp: ['주방O', '주방X'],
+                    // date: 'all',
+                    time: ['조식', '중식', '석식'],
+                    place: ['집밥', '외식'],
+                    way: ['조리', '상차림'],
+                    day: ['평일', '주말'],
+                    age: []
+                },
+            },
+            updated() {
+                this.$nextTick(() => {
+                    var $elem = $('.grid');
+                    $elem.imagesLoaded(function () {
+                        $elem.masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 410
+                        })
+                    })
+
+                });
+            },
+            methods: {
+                setData: function (list) {
+                    let imgList = [];
+                    for (let idx in list) {
+                        let info = list[idx].split('_');
+                        let age = info[1].replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, "");
+                        let date = info[3];
+                        date = date.replace(/(\d)(?=(?:\d{2})+(?!\d))/g, '$1-');
+                        date = '20' + date;
+                        
+                        let day = moment(date).day();
+
+                        if(day=="0" || day=="6"){
+                            day = "주말"
+                        }else{
+                            day = "평일"
+                        }
+
+                        let cond_age = (age - age % 10).toString();
+                        let param = {
+                            file: './images/' + list[idx],
+                            name: info[0],
+                            age: (age - age % 10).toString(),
+                            real_age: age,
+                            exp: info[2],
+                            date: date,
+                            day : day,
+                            time: info[4].replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, ""),
+                            place: info[5].replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, ""),
+                            way: info[6].split('.')[0].replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, ""),
+                            number: info[6].split('.')[0].replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, "")
+                        };
+
+                        if (this.conditions.age.indexOf(cond_age) == -1) {
+                            this.conditions.age.push(cond_age);
+                            this.age_list.push(cond_age);
+                        }
+                        imgList.push(param);
+                    }
+                    this.age_list.sort();
+                    this.img_list = imgList;
+
+                },
+                dataFilter: function (target) {
+                    for (let key in this.conditions) {
+                        if (this.conditions[key].indexOf(countSymbolsPedantically(target[key])) == -1) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+        });
+        function countSymbolsPedantically(string) {
+            // 모양이 같은 글자들을 NFC로 정규화한다 (정준 분해한 뒤에 다시 정준 결합)
+            var normalized = string.normalize('NFC');
+            return normalized;
+        }
+    </script>
+</body>
+
+</html>
