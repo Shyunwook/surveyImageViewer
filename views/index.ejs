@@ -167,7 +167,7 @@
                         $elem.masonry({
                             itemSelector: '.grid-item',
                             columnWidth: 410
-                        })
+                        });
                     })
 
                 });
@@ -224,9 +224,10 @@
                 dataFilter: function (target) {
                     for (let key in this.conditions) {
                         // 선택 아이템이 조건에 들어있지 않으면, 그리고 또 해당 조건이 name_age인데 조건 값이 all 이 아닐 경우!!
-                        if (this.conditions[key].indexOf(countSymbolsPedantically(target[key])) == -1
-                            && (key == "name_age" && this.conditions[key] != "all")) {
-                            return false;
+                        if (this.conditions[key].indexOf(countSymbolsPedantically(target[key])) == -1) {
+                            if(key != "name_age" || this.conditions[key] !='all'){
+                                return false;
+                            }
                         }
                     }
                     return true;
