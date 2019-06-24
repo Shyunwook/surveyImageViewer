@@ -40,6 +40,14 @@
             padding: 15px;
             border: 1px solid #b3b3b3;
         }
+        
+        .filter_box .col-md-3{
+            margin-bottom: 15px;
+        }
+
+        .filter_box .col-md-3 p{
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -47,7 +55,7 @@
     <div id="app" class="container-fluid">
         <div class="row">
             <div class="filter_box row">
-                <div id='time' class="col-md-2">
+                <div id='time' class="col-md-3">
                     <p>시간</p>
                     <label class="checkbox-inline">
                         <input type="checkbox" value="조식" v-model="conditions.time" checked>조식
@@ -60,7 +68,7 @@
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.time }}</span> -->
                 </div>
-                <div id='exp' class="col-md-2">
+                <div id='exp' class="col-md-3">
                     <p>주방구매경험</p>
                     <label class="checkbox-inline">
                         <input type="checkbox" value="주방O" v-model="conditions.exp" checked>주방O
@@ -70,7 +78,7 @@
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.exp }}</span> -->
                 </div>
-                <div id='place' class="col-md-2">
+                <div id='place' class="col-md-3">
                     <p>식사 장소</p>
                     <label class="checkbox-inline">
                         <input type="checkbox" value="외식" v-model="conditions.place" checked>외식
@@ -80,7 +88,7 @@
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.place }}</span> -->
                 </div>
-                <div id='way' class="col-md-2">
+                <div id='way' class="col-md-3">
                     <p>식사 방식</p>
                     <label class="checkbox-inline">
                         <input type="checkbox" value="조리" v-model="conditions.way" checked>조리
@@ -90,14 +98,14 @@
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
                 </div>
-                <div id='age' class="col-md-2">
+                <div id='age' class="col-md-3">
                     <p>나이대</p>
                     <label v-for="age in age_list" class="checkbox-inline">
                         <input type="checkbox" :value="age" v-model="conditions.age" checked>{{age}}대
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.age }}</span> -->
                 </div>
-                <div id='day' class="col-md-2">
+                <div id='day' class="col-md-3">
                     <p>평일/주말</p>
                     <label class="checkbox-inline">
                         <input type="checkbox" value="평일" v-model="conditions.day" checked>평일
@@ -107,6 +115,13 @@
                     </label>
                     <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
                 </div>
+                <div id='name_age' class="col-md-3">
+                    <p>이름(나이)</p>
+                    <select v-model="conditions.name_age">
+                        <option value="all" selected>전체보기</option>
+                        <option v-for="list in name_age_list" :value="list">{{list}}</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -114,7 +129,7 @@
             <div class="grid-item" v-for="list in img_list">
                 <img :src="list.file" width=400 :data-name="list.name" :data-exp="list.exp" :data-date="list.date"
                     :data-time="list.time" :data-place="list.place" :data-way="list.way" :data-number="list.number"
-                    :data-age="list.real_age" v-if="dataFilter(list)" :data-day="list.day">
+                    :data-age="list.real_age" v-if="dataFilter(list)" :data-day="list.day" :data-name_age="list.name_age">
             </div>
         </div>
     </div>
@@ -123,7 +138,6 @@
         $(document).ready(() => {
             let list = <%- fileList %>;
             // list.shift();
-            console.log(list);
             clist.setData(list);
         });
 
@@ -133,6 +147,7 @@
                 img_list: [],
                 flag: true,
                 age_list: [],
+                name_age_list: [], 
                 conditions: {
                     // name: 'all',
                     exp: ['주방O', '주방X'],
@@ -141,7 +156,8 @@
                     place: ['집밥', '외식'],
                     way: ['조리', '상차림'],
                     day: ['평일', '주말'],
-                    age: []
+                    age: [],
+                    name_age : 'all'
                 },
             },
             updated() {
@@ -173,8 +189,6 @@
                         }else{
                             day = "평일"
                         }
-                        console.log(info[5]);
-                        console.log(info);
                         let cond_age = (age - age % 10).toString();
                         let param = {
                             file: 'https://s3.ap-northeast-2.amazonaws.com/survey.image/image/' + encodeURI(list[idx]),
@@ -182,6 +196,7 @@
                             age: (age - age % 10).toString(),
                             real_age: age,
                             exp: info[2],
+                            name_age : `${info[0]}(${age})`,
                             date: date,
                             day : day,
                             time: info[4].replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, ""),
@@ -190,10 +205,16 @@
                             number: info[6].split('.')[0].replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/gi, "")
                         };
 
+                        
                         if (this.conditions.age.indexOf(cond_age) == -1) {
                             this.conditions.age.push(cond_age);
                             this.age_list.push(cond_age);
                         }
+
+                        if(this.name_age_list.indexOf(param.name_age) == -1){
+                            this.name_age_list.push(`${countSymbolsPedantically(param.name)}(${param.real_age})`);
+                        }
+
                         imgList.push(param);
                     }
                     this.age_list.sort();
@@ -202,7 +223,9 @@
                 },
                 dataFilter: function (target) {
                     for (let key in this.conditions) {
-                        if (this.conditions[key].indexOf(countSymbolsPedantically(target[key])) == -1) {
+                        // 선택 아이템이 조건에 들어있지 않으면, 그리고 또 해당 조건이 name_age인데 조건 값이 all 이 아닐 경우!!
+                        if (this.conditions[key].indexOf(countSymbolsPedantically(target[key])) == -1
+                            && (key == "name_age" && this.conditions[key] != "all")) {
                             return false;
                         }
                     }
@@ -210,6 +233,7 @@
                 }
             }
         });
+
         function countSymbolsPedantically(string) {
             // 모양이 같은 글자들을 NFC로 정규화한다 (정준 분해한 뒤에 다시 정준 결합)
             var normalized = string.normalize('NFC');
