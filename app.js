@@ -3,6 +3,8 @@ const path = require('path');
 const engine = require('ejs-locals');
 const AWS = require('aws-sdk');
 const fs = require('fs');
+const request = require('request');
+const cheerio = require('cheerio');
 
 const app = express();
 
@@ -22,17 +24,47 @@ app.get('/', (_, res) => {
         for(var name in response.data.Contents){
             fileList.push(response.data.Contents[name].Key.split('/')[1]);
         }
-        // var temp = [];
-        // for(let i = 0; i < 100; i ++ ){
-        //     temp.push(fileList[i]);
-        // }
         res.render('index.ejs', { fileList : JSON.stringify(fileList) });
-        // console.log(response.data.Contents);
-        // if (response.hasNextPage()) {
-        //     response.nextPage().on('success', handlePage).send();
-        // }
     }).send();
 })
+
+app.get('/mint', async (req, res) => {
+    let brand = fs.readFileSync(`brand.txt`, 'utf8');
+    brand = brand.split('\n');
+    let result = ''
+    for(i in brand){
+        result += await getRelate(brand[i]);
+        result += `</br>`
+    }
+    res.send(result);
+});
+
+function getRelate(brand){
+    return new Promise((resolve, reject) => {
+        var url = `https://search.naver.com/search.naver?ie=UTF-8&query=${encodeURIComponent(brand)}`;
+        request({
+            url : url,
+            method : 'GET'
+        },(err, response, data) => {
+            if(response.statusCode == 200){
+                let arr = parseRelate(brand,data);
+                resolve(arr.toString());
+            }
+        });
+    })
+};
+
+function parseRelate(brand,body){
+    $ = cheerio.load(body);
+    let keywords = $('#nx_related_keywords>dl>dd.lst_relate>ul>li>a');
+    let result = [brand];
+    console.log(keywords.length);
+    for(let i = 0; i < keywords.length; i ++ ){
+        if(brand=="라네즈") console.log($(keywords[i]).text());
+        result.push($(keywords[i]).text());
+    }
+    return result;
+}
 
 app.listen('3000',() => {
     console.log('app is running....!');
