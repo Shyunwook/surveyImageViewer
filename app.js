@@ -28,7 +28,7 @@ app.get('/', (_, res) => {
     }).send();
 })
 
-app.get('/mint', async (req, res) => {
+app.get('/mint', async function(req, res){
     let brand = fs.readFileSync(`brand.txt`, 'utf8');
     brand = brand.split('\n');
     let result = ''
@@ -40,7 +40,7 @@ app.get('/mint', async (req, res) => {
 });
 
 function getRelate(brand){
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject){
         var url = `https://search.naver.com/search.naver?ie=UTF-8&query=${encodeURIComponent(brand)}`;
         request({
             url : url,
