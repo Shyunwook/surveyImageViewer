@@ -28,16 +28,16 @@ app.get('/', (_, res) => {
     }).send();
 })
 
-app.get('/mint', async function(req, res){
-    let brand = fs.readFileSync(`brand.txt`, 'utf8');
-    brand = brand.split('\n');
-    let result = ''
-    for(i in brand){
-        result += await getRelate(brand[i]);
-        result += `</br>`
-    }
-    res.send(result);
-});
+// app.get('/mint', async function(req, res){
+//     let brand = fs.readFileSync(`brand.txt`, 'utf8');
+//     brand = brand.split('\n');
+//     let result = ''
+//     for(i in brand){
+//         result += await getRelate(brand[i]);
+//         result += `</br>`
+//     }
+//     res.send(result);
+// });
 
 function getRelate(brand){
     return new Promise(function(resolve, reject){
