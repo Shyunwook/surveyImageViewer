@@ -28,16 +28,17 @@ app.get('/', (_, res) => {
     }).send();
 })
 
-// app.get('/mint', async function(req, res){
-//     let brand = fs.readFileSync(`brand.txt`, 'utf8');
-//     brand = brand.split('\n');
-//     let result = ''
-//     for(i in brand){
-//         result += await getRelate(brand[i]);
-//         result += `</br>`
-//     }
-//     res.send(result);
-// });
+app.get('/mint', async function(req, res){
+    let brand = fs.readFileSync(`brand.txt`, 'utf8');
+    brand = brand.split('\n');
+    let result = ''
+    for(i in brand){
+        result += await getRelate(brand[i]);
+        result += `</br>`
+    }
+    res.send(result);
+    // getRelate(brand[0],res);
+});
 
 function getRelate(brand){
     return new Promise(function(resolve, reject){
@@ -46,12 +47,13 @@ function getRelate(brand){
             url : url,
             method : 'GET'
         },(err, response, data) => {
+            // res.send(data);
             if(response.statusCode == 200){
                 let arr = parseRelate(brand,data);
                 resolve(arr.toString());
             }
         });
-    })
+    });
 };
 
 function parseRelate(brand,body){
@@ -60,7 +62,6 @@ function parseRelate(brand,body){
     let result = [brand];
     console.log(keywords.length);
     for(let i = 0; i < keywords.length; i ++ ){
-        if(brand=="라네즈") console.log($(keywords[i]).text());
         result.push($(keywords[i]).text());
     }
     return result;
