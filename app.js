@@ -3,8 +3,8 @@ const path = require("path");
 const engine = require("ejs-locals");
 const AWS = require("aws-sdk");
 AWS.config.update({
-  //   accessKeyId: "AKIAIXBW7VDZ4WIBEWFA",
-  //   secretAccessKey: "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",
+  accessKeyId: "AKIAIXBW7VDZ4WIBEWFA",
+  secretAccessKey: "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",
   egion: "ap-northeast-2"
 });
 const s3 = new AWS.S3();
