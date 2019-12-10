@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css" />
+
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="moment.js"></script>
+
+    <style>
+      .grid-item {
+        margin-bottom: 10px;
+      }
+
+      .grid {
+        margin-top: 20px;
+      }
+
+      #app {
+        margin-top: 20px;
+      }
+
+      .filter {
+        font-size: 10px;
+      }
+
+      .filter_box {
+        margin-left: 30px;
+        margin-right: 30px;
+        padding: 15px;
+        border: 1px solid #b3b3b3;
+      }
+
+      .filter_box .col-md-3 {
+        margin-bottom: 15px;
+      }
+
+      .filter_box .col-md-3 p {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" class="container-fluid">
+      <div class="row">
+        <div class="filter_box row">
+          <div id="age" class="col-md-3">
+            <p>연령대</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="30" v-model="conditions.age" checked />30
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="40" v-model="conditions.age" checked />40
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="50" v-model="conditions.age" checked />50
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.exp }}</span> -->
+          </div>
+          <div id="family" class="col-md-3">
+            <p>가구수</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="3-4인" v-model="conditions.family" checked />3-4인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="5인" v-model="conditions.family" checked />5인
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.place }}</span> -->
+          </div>
+          <div id="job" class="col-md-3">
+            <p>직업</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="주부" v-model="conditions.job" checked />주부
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="직장인" v-model="conditions.job" checked />직장인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="개인사업자" v-model="conditions.job" checked />개인사업자
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+          </div>
+          <div id="own" class="col-md-3">
+            <p>셋트식기보유수</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="2개" v-model="conditions.own" checked />2개
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="3개이상" v-model="conditions.own" checked />3개이상
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.age }}</span> -->
+          </div>
+          <div id="location" class="col-md-3">
+            <p>위치</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="냉장고" v-model="conditions.location" checked />냉장고
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="개수대" v-model="conditions.location" checked />개수대
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="찬장" v-model="conditions.location" checked />찬장
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="상차림" v-model="conditions.location" checked />상차림
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+          </div>
+          <div id="type" class="col-md-3">
+            <p>식사유형</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="밥국반찬" v-model="conditions.type" checked />밥국반찬
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="메인요리" v-model="conditions.type" checked />메인요리
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="간식" v-model="conditions.type" checked />간식
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+          </div>
+          <div id="number" class="col-md-3">
+            <p>식사인원</p>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="1인" v-model="conditions.number" checked />1인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="2인" v-model="conditions.number" checked />2인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="3인" v-model="conditions.number" checked />3인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="4인" v-model="conditions.number" checked />4인
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" value="5인" v-model="conditions.number" checked />5인
+            </label>
+            <!-- <span>체크한 이름: {{ conditions.way }}</span> -->
+          </div>
+          <div id="name_age" class="col-md-3">
+            <p>이름(나이)</p>
+            <select v-model="conditions.name_age">
+              <option value="all" selected>전체보기</option>
+              <option v-for="list in name_age_list" :value="list">{{ list }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="grid-item" v-for="img in img_list">
+          <img
+            :src="img.file"
+            width="400"
+            :data-name="img.name"
+            :data-age="img.age"
+            :data-family="img.family"
+            :data-job="img.job"
+            :data-own="img.own"
+            :data-location="img.location"
+            :data-type="img.type"
+            :data-number="img.number"
+            v-if="dataFilter(img)"
+          />
+        </div>
+      </div>
+    </div>
+    <script>
+
+      $(document).ready(() => {
+          let list = <%- fileList %>;
+          // list.shift();
+          clist.setData(list);
+      });
+
+      let clist = new Vue({
+          el: '#app',
+          data: {
+              img_list: [],
+              name_age_list: [],
+              conditions: {
+                  age : ["30", "40", "50"],
+                  family: ["3-4인", "5인"],
+                  job: ["주부","직장인","개인사업자"],
+                  own: ["2개", "3개이상"],
+                  location: ["냉장고", "개수대", "찬장", "상차림"],
+                  type: ["밥국반찬", "메인요리", "간식"],
+                  number: ["1인", "2인", "3인", "4인", "5인"],
+                  name_age: 'all'
+              },
+          },
+          updated() {
+              this.$nextTick(() => {
+                  var $elem = $('.grid');
+                  $elem.imagesLoaded(function () {
+                      $elem.masonry({
+                          itemSelector: '.grid-item',
+                          columnWidth: 410
+                      });
+                  })
+
+              });
+          },
+          methods: {
+              setData: function (list) {
+                list.forEach(pic => {
+                    let info = pic.split('_');
+                    let name = info[0], age = info[1], family = info[2], job = info[3], own = info[4],
+                    location = info[5].replace(/[0-9]/gi, "")
+                    , type = info[6], number = info[7].split('.')[0], name_age = `${info[0]}(${info[1]})`;
+
+                    let param = {
+                        file: 'https://s3.ap-northeast-2.amazonaws.com/survey.image/may/' + encodeURI(pic),
+                        name, age, job, family, own, location, type, number, name_age
+                    }
+                    this.img_list.push(param);
+
+                    if(this.name_age_list.indexOf(`${countSymbolsPedantically(param.name)}(${param.age})`) == -1){
+                          this.name_age_list.push(`${countSymbolsPedantically(param.name)}(${param.age})`);
+                    }
+                });
+              },
+              dataFilter: function (target) {
+                  for (let key in this.conditions) {
+                    if(this.conditions['name_age'] !== 'all' && this.conditions['name_age'] !== countSymbolsPedantically(target['name_age'])){
+                        console.log(countSymbolsPedantically(target['name_age']))
+                        return false;
+                    }
+                    if (key !== "name_age" && target[key] !== "x" && this.conditions[key].indexOf(countSymbolsPedantically(target[key])) === -1) {
+                        return false;
+                    }
+                  }
+                  return true;
+              }
+          }
+      });
+
+      function countSymbolsPedantically(data) {
+          let str = data || '';
+          // 모양이 같은 글자들을 NFC로 정규화한다 (정준 분해한 뒤에 다시 정준 결합)
+          var normalized = str.normalize('NFC');
+          return normalized;
+      }
+    </script>
+  </body>
+</html>
