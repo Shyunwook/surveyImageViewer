@@ -221,7 +221,7 @@
                     let info = pic.split('_');
                     let name = info[0], age = info[1], family = info[2], job = info[3], own = info[4],
                     location = info[5].replace(/[0-9]/gi, "")
-                    , type = info[6], number = info[7].split('.')[0], name_age = `${info[0]}(${info[1]})`;
+                    , type = info[6].replace(/[0-9]/gi, ""), number = info[7].split('.')[0], name_age = `${info[0]}(${info[1]})`;
 
                     let param = {
                         file: 'https://s3.ap-northeast-2.amazonaws.com/survey.image/may/' + encodeURI(pic),
